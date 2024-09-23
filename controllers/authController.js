@@ -3,14 +3,14 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 
 exports.register = (req, res) => {
-    const { email, password, first_name, last_name, age, gender } = req.body;
+    const { email, password, firstName, lastName, age, gender } = req.body;
 
     // Hash the password
     bcrypt.hash(password, 10, (err, hashedPassword) => {
         if (err) return res.status(500).json({ error: 'Error hashing password' });
 
         // Create a new user
-        const newUser = { email, password:hashedPassword, first_name, last_name, age, gender };
+        const newUser = { email, password:hashedPassword, firstName, lastName, age, gender };
         console.log(newUser)
         User.create(newUser, (err, userId) => {
             if (err) return res.status(500).json({ error: 'Error registering user' });
@@ -34,7 +34,7 @@ exports.login = (req, res) => {
             if (!isMatch) return res.status(401).json({ error: 'Invalid email or password' });
 
             // Generate a token
-            const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '2h' });
+            const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '2d' });
 
             res.status(200).json({ message: 'Logged in successfully', token });
         });

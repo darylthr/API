@@ -2,7 +2,7 @@ const db = require('../config/db');
 
 const User = {
     findByEmail: (email, callback) => {
-        const sql = 'SELECT * FROM user WHERE email = ?';
+        const sql = 'SELECT * FROM users WHERE email = ?';
         db.query(sql, [email], (err, result) => {
             if (err) {
                 callback(err, null);
@@ -12,12 +12,12 @@ const User = {
         });
     },
     create: (userData, callback) => {
-        const sql = `INSERT INTO user (first_name, last_name, email, password, age, gender) 
+        const sql = `INSERT INTO users (firstName, lastName, email, password, age, gender) 
                      VALUES (?, ?, ?, ?, ?, ?)`;
         
         const values = [
-            userData.first_name, 
-            userData.last_name, 
+            userData.firstName, 
+            userData.lastName, 
             userData.email, 
             userData.password, 
             userData.age, 

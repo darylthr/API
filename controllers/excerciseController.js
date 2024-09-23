@@ -1,11 +1,29 @@
 const Excercise = require("../models/excerciseModel");
 
-exports.getExcercises = (req, res) => {
-  Excercise.findExcercise((err, excercises) => {
+exports.respiratory = (req, res) => {
+  Excercise.findExcerciseRespiratory((err, question) => {
     if (err) {
       return res.status(500).json({ error: "Error Fetching Excercises" });
     }
-    return res.json(excercises);
+    return res.json(question);
+  });
+};
+
+exports.muscular = (req, res) => {
+  Excercise.findExcerciseMuscular((err, question) => {
+    if (err) {
+      return res.status(500).json({ error: "Error Fetching Excercises" });
+    }
+    return res.json(question);
+  });
+};
+
+exports.musical = (req, res) => {
+  Excercise.findExcerciseMusical((err, question) => {
+    if (err) {
+      return res.status(500).json({ error: "Error Fetching Excercises" });
+    }
+    return res.json(question);
   });
 };
 
@@ -18,31 +36,22 @@ exports.getQuestions = (req, res) => {
   });
 };
 
-exports.insertAnswer = (req, res) => {
-  const {
-    question,
-    question1,
-    question2,
-    question3,
-    question4,
-    question5,
-    question6,
-    id_user,
-  } = req.body;
+exports.insertAnswer = async (req, res) => {
+  const answers = req.body;
+  const results = [];
 
-  const answer = {
-    question,
-    question1,
-    question2,
-    question3,
-    question4,
-    question5,
-    question6,
-    id_user,
-  };
-  Excercise.insertAnswer(answer, (err, answerID) => {
-    if (err) return res.status(500).json({ error: "Error" });
+  try {
+      await Promise.all(answers.map(async (answer) => {
+          const { idQuestion, answerValue } = answer;
+          const idUser = req.user.userId;
 
-    res.status(201).json({ message: "Answer Registered", answerID });
-  });
+          const answerID = await Excercise.insertAnswer({ idUser, idQuestion, answerValue });
+          results.push(answerID);
+      }));
+
+      res.status(200).json({ message: 'Answers inserted successfully', results });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Error inserting answers' });
+  }
 };

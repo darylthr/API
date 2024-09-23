@@ -1,51 +1,63 @@
 const db = require("../config/db");
 
 const Excercise = {
-  findExcercise: (callback) => {
-    const sql = "SELECT * from excercise";
+  findExcerciseRespiratory: (callback) => {
+    const sql = "SELECT * from exercises WHERE type = 'respiratorio'";
     db.query(sql, (err, results) => {
       if (err) {
         callback(err, null);
       } else {
-        callback(null, results[0]);
+        callback(null, results);
+      }
+    });
+  },
+
+  findExcerciseMuscular: (callback) => {
+    const sql = "SELECT * from exercises WHERE type = 'muscular'";
+    db.query(sql, (err, results) => {
+      if (err) {
+        callback(err, null);
+      } else {
+        callback(null, results);
+      }
+    });
+  },
+
+  findExcerciseMusical: (callback) => {
+    const sql = "SELECT * from exercises WHERE type = 'musical'";
+    db.query(sql, (err, results) => {
+      if (err) {
+        callback(err, null);
+      } else {
+        callback(null, results);
       }
     });
   },
 
   findQuestion: (callback) => {
-    const sql = "SELECT * from question";
+    const sql = "SELECT * from questions";
     db.query(sql, (err, results) => {
       if (err) {
         callback(err, null);
       } else {
-        callback(null, results[0]);
+        callback(null, results);
       }
     });
   },
 
-  insertAnswer: (userAnswer, callback) => {
-        const sql = `INSERT INTO question (question, question1, question2, question3, question4, question5, question6, id_user) 
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-        
-        const values = [
-            userAnswer.question, 
-            userAnswer.question1, 
-            userAnswer.question2, 
-            userAnswer.question3, 
-            userAnswer.question4, 
-            userAnswer.question5,
-            userAnswer.question6,
-            userAnswer.id_user,
-        ];
-    
+  insertAnswer: (userAnswer) => {
+    return new Promise((resolve, reject) => {
+        const sql = `INSERT INTO answers (idUser, idQuestion, answerValue) VALUES (?, ?, ?)`;
+        const values = [userAnswer.idUser, userAnswer.idQuestion, userAnswer.answerValue];
+
         db.query(sql, values, (err, result) => {
             if (err) {
-                callback(err, null);
-            } else {
-                callback(null, result.insertId);
+                return reject(err);
             }
+            resolve(result.insertId);
         });
-    }
+    });
+  }
 };
 
 module.exports = Excercise;
